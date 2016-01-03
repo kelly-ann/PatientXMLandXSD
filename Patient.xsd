@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- all code in an XSD goes inside <schema> tags.
+	"xmlns:tns" defines the shorthand prefix for the targetNamespace.
+	tns = "target NameSpace".
+	targetNamespace variable can be set equal to anything but URLS are the standard since they 
+	are unique.
+ -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.kelly-ann.org/Patient"
+	xmlns:tns="http://www.kelly-ann.org/Patient" elementFormDefault="qualified">
+	
+<!-- the 'elementFormDefault="qualified"' has nothing to do with the XSD, but instead has to do with the XML doc 
+		it says that elements of the XML doc MUST be prefixed (e.g. "<tns:age>5</tns:age>"). if you want 
+		to NOT have to prefix each element you can change it to 'elementFormDefault="unqualified"' 
+		(e.g. "<age>5</age>").  Note that it no longer must have the "tns:" prefix before each element.		
+ -->
+	
+<!-- XML is case sensitive! -->
+	<element name="patient" type="tns:Patient" />
+	
+<!-- Note: by default every element MUST appear once and only once in the XML doc this can be
+			modified by using maxOccurs and minOccurs on an <element> tag -->
+	
+	<complexType name="Patient">
+		<sequence> <!-- <sequence> says that all the elements w/i should appear in the SAME order. -->
+			
+			<element name="name" type="tns:String15Chars" />
+			<element name="age" type="int" /> <!-- 'minOccurs="0" makes an element optional -->
+			<element name="dob" type="date" minOccurs="0"/>
+		<!-- 'maxOccurs="unbounded"' sets no limit on amount of times email element can occur in XML doc -->
+			<element name="email" type="string" maxOccurs="unbounded" />
+			<element name="gender" type="tns:Gender" />
+			<element name="phone" type="string" />
+			<element name="payment" type="tns:PaymentType" />
+		</sequence>
+		
+		<attribute name="id" type="tns:ID" />
+	</complexType>
+	
+	<complexType name="PaymentType">
+		<choice> <!-- <choice> says that ONLY 1 of the elements w/i can appear. -->
+			<element name="cash" type="int" />
+			<element name="insurance" type="tns:Insurance" />
+		</choice>
+	</complexType>
+	
+	<complexType name="Insurance">
+		<all> <!-- <all> says that all the elements w/i should appear but order does NOT matter. -->
+			<element name="provider" type="string" />
+			<element name="limit" type="int" />
+		</all>
+	</complexType>
+	
+	<!-- these simple types define the type that is used in the complexType's above where it says 
+		'type="tns:ID"' above -->
+	<simpleType name="ID" >
+		<restriction base="int">  <!-- int is defined here: http://www.w3.org/2001/XMLSchema -->
+			<pattern value="[0-9]*"></pattern>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="String15Chars">
+		<restriction base="string">
+			<maxLength value="15" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="Gender">
+		<restriction base="string">
+			<enumeration value="F" />
+			<enumeration value="M" />
+		</restriction>
+	</simpleType>
+	
+</schema>
